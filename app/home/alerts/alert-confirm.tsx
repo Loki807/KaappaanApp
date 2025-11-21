@@ -1,33 +1,43 @@
-import { useState, useEffect } from "react";
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, Alert } from "react-native";
-import { useLocalSearchParams, router } from "expo-router";
 import * as Location from "expo-location";
+import { router, useLocalSearchParams } from "expo-router";
 import * as SecureStore from "expo-secure-store";
-import { sendSOS  } from "../../../src/api/alertApi";
+import { useEffect, useState } from "react";
+import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import { sendSOS } from "../../../src/api/alertApi";
 
 export default function AlertConfirm() {
   const { type } = useLocalSearchParams();
   const [description, setDescription] = useState("");
   const [coords, setCoords] = useState<any>(null);
 
-  useEffect(() => {
-    (async () => {
-      let { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== "granted") {
-        Alert.alert("Permission needed", "Turn on location permission.");
-        return;
-      }
+ useEffect(() => {
+  (async () => {
+    let { status } = await Location.requestForegroundPermissionsAsync();
 
-      let loc = await Location.getCurrentPositionAsync({
-        accuracy: Location.Accuracy.High,
-      });
+    if (status !== "granted") {
+      Alert.alert("Permission needed", "Turn on location permission.");
+      return;
+    }
 
-      setCoords({
-        lat: loc.coords.latitude,
-        lng: loc.coords.longitude,
-      });
-    })();
-  }, []);
+    let loc = await Location.getCurrentPositionAsync({
+      accuracy: Location.Accuracy.High,
+    });
+
+    setCoords({
+      lat: loc.coords.latitude,
+      lng: loc.coords.longitude,
+    });
+
+    // ⭐ ADD HERE
+    console.log("📍 Location:", {
+      lat: loc.coords.latitude,
+      lng: loc.coords.longitude,
+      acc: loc.coords.accuracy
+    });
+
+  })();
+}, []);
+
 
   const submitAlert = async () => {
     if (!coords) {
@@ -38,12 +48,13 @@ export default function AlertConfirm() {
     const citizenId = await SecureStore.getItemAsync("citizenId");
 
     const payload = {
-      citizenId,
-      alertTypeName: type,
-      description,
-      latitude: coords.lat,
-      longitude: coords.lng,
-    };
+  CitizenId: citizenId,
+  AlertTypeName: type,
+  Description: description || "No description",
+  Latitude: coords.lat,
+  Longitude: coords.lng,
+  ReportedAt: new Date().toISOString(),
+};
 
     try {
       await sendSOS (payload);

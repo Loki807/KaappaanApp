@@ -20,7 +20,7 @@ export default function AlertTypeList() {
           key={a.name}
           style={styles.btn}
           onPress={() =>
-            router.push(`/home/alert-confirm?type=${a.name}`)
+            router.push(`/home/alerts/alert-confirm?type=${a.name}`)
           }
         >
           <Text style={styles.btnText}>{a.name}</Text>

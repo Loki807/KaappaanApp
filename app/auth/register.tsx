@@ -1,6 +1,5 @@
-// app/(auth)/register.tsx
 import { useState } from "react";
-import { View, Text, TextInput, Button, Alert } from "react-native";
+import { View, Text, TextInput, StyleSheet, ScrollView, TouchableOpacity, Alert } from "react-native";
 import { router } from "expo-router";
 import { registerRequest } from "../../src/api/authApi";
 
@@ -15,10 +14,27 @@ export default function RegisterScreen() {
     emergencyContact: "",
   });
 
-  const update = (key: string, val: string) =>
+  const update = (key: string, val: string) => {
     setForm({ ...form, [key]: val });
+  };
+
+  const validate = () => {
+    if (!form.fullName.trim()) return "Full name is required";
+    if (!form.email.includes("@")) return "Invalid email";
+    if (!/^07\d{8}$/.test(form.phoneNumber))
+      return "Phone must start with 07 and be 10 digits";
+    if (form.password.length < 6)
+      return "Password must be at least 6 characters";
+    return null;
+  };
 
   const handleRegister = async () => {
+    const error = validate();
+    if (error) {
+      Alert.alert("Validation Error", error);
+      return;
+    }
+
     try {
       const res = await registerRequest(form);
 
@@ -33,18 +49,33 @@ export default function RegisterScreen() {
   };
 
   return (
-    <View style={{ padding: 20 }}>
-      <Text style={{ fontSize: 26, fontWeight: "bold" }}>Citizen Register</Text>
+    <ScrollView style={styles.container}>
+      <Text style={styles.header}>Citizen Register</Text>
 
-      <TextInput placeholder="Full Name" onChangeText={(v) => update("fullName", v)} style={{ borderWidth: 1, marginTop: 10 }} />
-      <TextInput placeholder="Email" onChangeText={(v) => update("email", v)} style={{ borderWidth: 1, marginTop: 10 }} />
-      <TextInput placeholder="Phone Number" onChangeText={(v) => update("phoneNumber", v)} style={{ borderWidth: 1, marginTop: 10 }} />
-      <TextInput placeholder="Password" secureTextEntry onChangeText={(v) => update("password", v)} style={{ borderWidth: 1, marginTop: 10 }} />
-      <TextInput placeholder="NIC" onChangeText={(v) => update("nic", v)} style={{ borderWidth: 1, marginTop: 10 }} />
-      <TextInput placeholder="Address" onChangeText={(v) => update("address", v)} style={{ borderWidth: 1, marginTop: 10 }} />
-      <TextInput placeholder="Emergency Contact" onChangeText={(v) => update("emergencyContact", v)} style={{ borderWidth: 1, marginTop: 10 }} />
+      <TextInput style={styles.input} placeholder="Full Name" onChangeText={(v) => update("fullName", v)} />
+      <TextInput style={styles.input} placeholder="Email" onChangeText={(v) => update("email", v)} />
+      <TextInput style={styles.input} placeholder="Phone Number" onChangeText={(v) => update("phoneNumber", v)} />
+      <TextInput style={styles.input} placeholder="Password" secureTextEntry onChangeText={(v) => update("password", v)} />
+      <TextInput style={styles.input} placeholder="NIC" onChangeText={(v) => update("nic", v)} />
+      <TextInput style={styles.input} placeholder="Address" onChangeText={(v) => update("address", v)} />
+      <TextInput style={styles.input} placeholder="Emergency Contact" onChangeText={(v) => update("emergencyContact", v)} />
 
-      <Button title="Register" onPress={handleRegister} />
-    </View>
+      <TouchableOpacity style={styles.btn} onPress={handleRegister}>
+        <Text style={styles.btnText}>Register</Text>
+      </TouchableOpacity>
+
+      <Text style={styles.link} onPress={() => router.replace("/auth/login")}>
+        Already have an account? Login
+      </Text>
+    </ScrollView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: { padding: 25, backgroundColor: "#fff" },
+  header: { fontSize: 30, fontWeight: "bold", color: "#D50000", textAlign: "center", marginBottom: 25 },
+  input: { borderWidth: 1, borderColor: "#ddd", padding: 14, borderRadius: 10, marginTop: 12, backgroundColor: "#fafafa" },
+  btn: { backgroundColor: "#D50000", padding: 15, borderRadius: 10, marginTop: 25 },
+  btnText: { color: "#fff", textAlign: "center", fontSize: 18, fontWeight: "bold" },
+  link: { textAlign: "center", marginTop: 20, color: "#D50000", fontSize: 16 },
+});

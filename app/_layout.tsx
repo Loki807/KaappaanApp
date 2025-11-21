@@ -1,8 +1,23 @@
-// app/_layout.tsx
-import { Stack } from "expo-router";
+import { Stack, useRouter } from "expo-router";
+import { useEffect } from "react";
+import { getToken } from "../src/utils/storage";
 
 export default function RootLayout() {
-  return (
-    <Stack screenOptions={{ headerShown: false }} />
-  );
+  const router = useRouter();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const token = await getToken();
+
+      if (!token) {
+        router.replace("/auth/login");   // <-- LOGIN FIRST
+      } else {
+        router.replace("/home/dashboard"); // <-- THIS MAKES DASHBOARD OPEN FIRST
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  return <Stack screenOptions={{ headerShown: false }} />;
 }

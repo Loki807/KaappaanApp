@@ -1,45 +1,47 @@
 import { View, Text, StyleSheet } from "react-native";
-import * as SecureStore from "expo-secure-store";
 import { useEffect, useState } from "react";
+import { getName, getEmail, getCitizenId } from "../../src/utils/storage";
 
 export default function Profile() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
+  const [info, setInfo] = useState({ name: "", email: "", id: "" });
 
   useEffect(() => {
     (async () => {
-      const n = await SecureStore.getItemAsync("name");
-      const e = await SecureStore.getItemAsync("email");
-      setName(n || "");
-      setEmail(e || "");
+      const name = await getName();
+      const email = await getEmail();
+      const id = await getCitizenId();
+
+      setInfo({ name: name || "", email: email || "", id: id || "" });
     })();
   }, []);
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Profile</Text>
+      <Text style={styles.header}>Profile</Text>
 
       <View style={styles.card}>
         <Text style={styles.label}>Full Name</Text>
-        <Text style={styles.value}>{name || "N/A"}</Text>
+        <Text style={styles.value}>{info.name}</Text>
 
         <Text style={styles.label}>Email</Text>
-        <Text style={styles.value}>{email || "N/A"}</Text>
+        <Text style={styles.value}>{info.email}</Text>
+
+        <Text style={styles.label}>Citizen ID</Text>
+        <Text style={styles.value}>{info.id}</Text>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 25 },
-  title: { fontSize: 30, fontWeight: "bold", marginBottom: 20, color: "#D50000" },
+  container: { padding: 25, flex: 1 },
+  header: { fontSize: 30, fontWeight: "bold", color: "red", marginBottom: 20 },
   card: {
     padding: 20,
-    borderWidth: 1,
-    borderColor: "#ddd",
-    borderRadius: 12,
     backgroundColor: "#fff",
+    borderRadius: 12,
+    elevation: 4,
   },
-  label: { fontSize: 16, opacity: 0.6, marginTop: 10 },
-  value: { fontSize: 20, fontWeight: "600", marginBottom: 10 },
+  label: { opacity: 0.6, marginTop: 10 },
+  value: { fontSize: 18, fontWeight: "600" },
 });

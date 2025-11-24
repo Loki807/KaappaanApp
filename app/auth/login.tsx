@@ -2,33 +2,28 @@ import { useState } from "react";
 import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { router } from "expo-router";
 import { loginRequest } from "../../src/api/authApi";
+import { saveCitizenId, saveEmail, saveName } from "../../src/utils/storage";
 
-export default function Login() {
+export default function LoginScreen() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const validate = () => {
-    if (!email.trim()) return "Email is required";
-    if (!email.includes("@")) return "Invalid email";
-    if (!password.trim()) return "Password is required";
-    return null;
-  };
-
   const login = async () => {
-    const error = validate();
-    if (error) {
-      Alert.alert("Validation Error", error);
-      return;
-    }
+    if (!email || !password) return Alert.alert("Enter email & password");
 
     try {
       const res = await loginRequest(email, password);
 
-      if (res.data.message?.includes("OTP")) {
-        router.push(`/auth/verify-otp?email=${email}`);
-      } else {
-        Alert.alert("Error", "Something went wrong");
+      console.log("🔵 LOGIN RESPONSE:", res.data);
+
+      if (res.data?.citizenId) {
+        await saveCitizenId(res.data.citizenId);
+        await saveEmail(email);
+        await saveName(res.data.fullName || res.data.name);
       }
+
+      router.push(`/auth/verify-otp?email=${email}`);
+
     } catch (err: any) {
       Alert.alert("Error", err.response?.data?.message || "Login failed");
     }
@@ -38,40 +33,25 @@ export default function Login() {
     <View style={styles.container}>
       <Text style={styles.header}>Citizen Login</Text>
 
-      <TextInput
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        style={styles.input}
-      />
-
-      <TextInput
-        placeholder="Password"
-        secureTextEntry
-        value={password}
-        onChangeText={setPassword}
-        style={styles.input}
-      />
+      <TextInput placeholder="Email" style={styles.input} onChangeText={setEmail}/>
+      <TextInput placeholder="Password" secureTextEntry style={styles.input} onChangeText={setPassword}/>
 
       <TouchableOpacity style={styles.btn} onPress={login}>
-        <Text style={styles.btnText}>Login</Text>
+        <Text style={styles.btnText}>Send OTP</Text>
       </TouchableOpacity>
 
-      <Text style={styles.link} onPress={() => router.push("/auth/register")}>
-        Don't have an account? Register
+      <Text style={styles.link} onPress={() => router.replace("/auth/register")}>
+        No account? Register
       </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 25, justifyContent: "center" },
-  header: { fontSize: 30, fontWeight: "bold", color: "#D50000", textAlign: "center", marginBottom: 30 },
-  input: {
-    borderWidth: 1, padding: 14, borderRadius: 10,
-    marginBottom: 15, backgroundColor: "#fafafa"
-  },
-  btn: { backgroundColor: "#D50000", padding: 15, borderRadius: 10 },
-  btnText: { color: "#fff", textAlign: "center", fontSize: 18, fontWeight: "bold" },
-  link: { textAlign: "center", marginTop: 20, color: "#D50000", fontSize: 16 },
+  container: { padding: 25 },
+  header: { fontSize: 30, fontWeight: "bold", color: "red", marginBottom: 20 },
+  input: { borderWidth: 1, padding: 12, marginVertical: 10, borderRadius: 8 },
+  btn: { backgroundColor: "red", padding: 15, borderRadius: 8, marginTop: 20 },
+  btnText: { textAlign: "center", color: "white", fontWeight: "bold" },
+  link: { marginTop: 15, textAlign: "center", color: "red" }
 });

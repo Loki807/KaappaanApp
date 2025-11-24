@@ -5,10 +5,7 @@ export const BASE_URL = "https://kaappaan.duckdns.org/api";
 
 const api = axios.create({
   baseURL: BASE_URL,
-  timeout: 15000,
-  headers: {
-    "Content-Type": "application/json",
-  },
+  headers: { "Content-Type": "application/json" },
 });
 
 api.interceptors.request.use(async (config) => {

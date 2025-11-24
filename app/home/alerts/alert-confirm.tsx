@@ -10,34 +10,31 @@ export default function AlertConfirm() {
   const [description, setDescription] = useState("");
   const [coords, setCoords] = useState<any>(null);
 
- useEffect(() => {
-  (async () => {
-    let { status } = await Location.requestForegroundPermissionsAsync();
+  useEffect(() => {
+    (async () => {
+      let { status } = await Location.requestForegroundPermissionsAsync();
 
-    if (status !== "granted") {
-      Alert.alert("Permission needed", "Turn on location permission.");
-      return;
-    }
+      if (status !== "granted") {
+        Alert.alert("Permission needed", "Turn on location permission.");
+        return;
+      }
 
-    let loc = await Location.getCurrentPositionAsync({
-      accuracy: Location.Accuracy.High,
-    });
+      let loc = await Location.getCurrentPositionAsync({
+        accuracy: Location.Accuracy.High,
+      });
 
-    setCoords({
-      lat: loc.coords.latitude,
-      lng: loc.coords.longitude,
-    });
+      setCoords({
+        lat: loc.coords.latitude,
+        lng: loc.coords.longitude,
+      });
 
-    // ⭐ ADD HERE
-    console.log("📍 Location:", {
-      lat: loc.coords.latitude,
-      lng: loc.coords.longitude,
-      acc: loc.coords.accuracy
-    });
-
-  })();
-}, []);
-
+      console.log("📍 Location:", {
+        lat: loc.coords.latitude,
+        lng: loc.coords.longitude,
+        acc: loc.coords.accuracy,
+      });
+    })();
+  }, []);
 
   const submitAlert = async () => {
     if (!coords) {
@@ -45,10 +42,17 @@ export default function AlertConfirm() {
       return;
     }
 
+    // ⭐ GET REAL CITIZEN ID (already saved during OTP login)
     const citizenId = await SecureStore.getItemAsync("citizenId");
 
-    const payload = {
-  CitizenId: citizenId,
+    if (!citizenId) {
+      Alert.alert("Error", "Citizen ID missing. Please login again.");
+      router.replace("/auth/login");
+      return;
+    }
+
+   const payload = {
+  CitizenId: String(citizenId),   // ⭐ GUID FIX
   AlertTypeName: type,
   Description: description || "No description",
   Latitude: coords.lat,
@@ -56,13 +60,15 @@ export default function AlertConfirm() {
   ReportedAt: new Date().toISOString(),
 };
 
+    console.log("🚀 FINAL PAYLOAD:", payload);
+
     try {
-      await sendSOS (payload);
+      await sendSOS(payload);
       Alert.alert("Success", "Alert sent successfully!");
       router.push("/home/dashboard");
-    } catch (err) {
+    } catch (err: any) {
+      console.log("❌ ERROR RESPONSE:", err.response?.data);
       Alert.alert("Error", "Failed to send alert");
-      console.log(err);
     }
   };
 

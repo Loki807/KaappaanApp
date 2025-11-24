@@ -1,6 +1,4 @@
 import api from "../utils/api";
 
-export const sendSOS = async (payload:any) => {
-  return await api.post("/alert/create", payload);
-};
-
+export const sendSOS = (payload: any) =>
+  api.post("/alert/create", payload);

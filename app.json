@@ -10,7 +10,23 @@
     "newArchEnabled": true,
 
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "App needs your location to send emergency alerts.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "Location access is required for emergency reporting.",
+        "NSUserTrackingUsageDescription": "Used for secure login and user verification.",
+        "KeychainSharing": true,
+
+        "NSAppTransportSecurity": {
+          "NSAllowsArbitraryLoads": false,
+          "NSExceptionDomains": {
+            "kaappaan.duckdns.org": {
+              "NSExceptionAllowsInsecureHTTPLoads": true,
+              "NSIncludesSubdomains": true
+            }
+          }
+        }
+      }
     },
 
     "android": {
@@ -31,6 +47,7 @@
 
     "plugins": [
       "expo-router",
+
       [
         "expo-splash-screen",
         {
@@ -43,6 +60,7 @@
           }
         }
       ],
+
       "expo-secure-store",
 
       [

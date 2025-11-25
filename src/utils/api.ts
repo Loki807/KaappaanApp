@@ -1,7 +1,7 @@
 import axios from "axios";
 import * as SecureStore from "expo-secure-store";
 
-export const BASE_URL = "https://kaappaan.duckdns.org/api";
+export const BASE_URL = "https://uncomplying-carlee-unregurgitated.ngrok-free.dev/api";
 
 const api = axios.create({
   baseURL: BASE_URL,

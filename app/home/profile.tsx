@@ -26,8 +26,8 @@ export default function Profile() {
         <Text style={styles.label}>Email</Text>
         <Text style={styles.value}>{info.email}</Text>
 
-        <Text style={styles.label}>Citizen ID</Text>
-        <Text style={styles.value}>{info.id}</Text>
+        
+        
       </View>
     </View>
   );

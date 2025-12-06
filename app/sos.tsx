@@ -4,7 +4,7 @@ import * as Location from "expo-location";
 import { router } from "expo-router";
 
 import { sendSOS } from "../src/api/alertApi";
-import { getCitizen } from "../src/utils/storage";
+import { getCitizenId } from "../src/utils/storage"; // ✅ FIXED
 
 export default function SOSScreen() {
   const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
@@ -31,8 +31,9 @@ export default function SOSScreen() {
       return;
     }
 
-    const citizen = await getCitizen();
-    if (!citizen) {
+    const citizenId = await getCitizenId(); // ✅ FIXED
+
+    if (!citizenId) {
       Alert.alert("Error", "Citizen not found. Login again.");
       router.replace("/auth/login");
       return;
@@ -40,8 +41,9 @@ export default function SOSScreen() {
 
     try {
       setLoading(true);
+
       const payload = {
-        citizenId: citizen.id,
+        citizenId: citizenId,  // ✅ FIXED
         alertTypeName: "SOS",
         latitude: coords.lat,
         longitude: coords.lng,

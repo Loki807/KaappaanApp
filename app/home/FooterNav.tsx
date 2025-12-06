@@ -24,8 +24,8 @@ export default function FooterNav() {
           >
             <Feather
               name={item.icon as any}
-              size={32}
-              color={active ? "#B30000" : "#555"}
+              size={28}
+              color={active ? "#B30000" : "#6e6b6bff"}
               style={active && styles.activeIcon}
             />
           </TouchableOpacity>
@@ -39,12 +39,12 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: "row",
     justifyContent: "space-around",
-    paddingVertical: 12,
-    backgroundColor: "#fff",
+    paddingVertical: 30,
+    backgroundColor: "#ffffffff",
     borderTopWidth: 1,
     borderColor: "#ddd",
     position: "absolute",
-    bottom: 12,
+    bottom: 30,
     left: 0,
     right: 0,
     zIndex: 20,
@@ -55,6 +55,6 @@ const styles = StyleSheet.create({
   },
 
   activeIcon: {
-    transform: [{ scale: 1.25 }],
+    transform: [{ scale: 1.00 }],
   },
 });

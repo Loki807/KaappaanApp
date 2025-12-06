@@ -1,17 +1,16 @@
 import { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
-import { getName, getEmail, getCitizenId, clearAll } from "../../src/utils/storage";
+import { getName, getEmail, clearAll } from "../../src/utils/storage";
 import { router } from "expo-router";
 
 export default function Profile() {
-  const [info, setInfo] = useState({ name: "", email: "", id: "" });
+  const [info, setInfo] = useState({ name: "", email: "" });
 
   useEffect(() => {
     (async () => {
       const name = await getName();
       const email = await getEmail();
-      const id = await getCitizenId();
-      setInfo({ name: name || "", email: email || "", id: id || "" });
+      setInfo({ name: name || "", email: email || "" });
     })();
   }, []);
 
@@ -22,17 +21,35 @@ export default function Profile() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>My Profile</Text>
 
+      {/* HEADER */}
+      <View style={styles.headerBox}>
+        <Text style={styles.headerTitle}>My Profile</Text>
+
+        <View style={styles.avatarShadow}>
+          <View style={styles.avatarBox}>
+            <Text style={styles.avatarText}>
+              {info.name?.charAt(0)?.toUpperCase()}
+            </Text>
+          </View>
+        </View>
+      </View>
+
+      {/* NEW CARD DESIGN */}
       <View style={styles.card}>
-        <Text style={styles.label}>Full Name</Text>
-        <Text style={styles.value}>{info.name}</Text>
+        <Text style={styles.sectionTitle}>Personal Details</Text>
 
-        <Text style={styles.label}>Email</Text>
-        <Text style={styles.value}>{info.email}</Text>
+        <View style={styles.infoRow}>
+          <Text style={styles.label}>Full Name</Text>
+          <Text style={styles.value}>{info.name}</Text>
+        </View>
 
-        <Text style={styles.label}>Citizen ID</Text>
-        <Text style={styles.value}>{info.id}</Text>
+        <View style={styles.line} />
+
+        <View style={styles.infoRow}>
+          <Text style={styles.label}>Email</Text>
+          <Text style={styles.value}>{info.email}</Text>
+        </View>
       </View>
 
       {/* LOGOUT BUTTON */}
@@ -43,29 +60,119 @@ export default function Profile() {
   );
 }
 
-const styles = StyleSheet.create({
-  container: { padding: 25, flex: 1, backgroundColor: "#f8f8f8" },
-  header: { fontSize: 28, fontWeight: "900", color: "#7A0000", marginBottom: 20 },
-  card: {
-    padding: 20,
-    backgroundColor: "#fff",
-    borderRadius: 12,
-    elevation: 4,
-  },
-  label: { opacity: 0.6, marginTop: 10, fontSize: 14 },
-  value: { fontSize: 20, fontWeight: "700", color: "#333" },
+/* ---------------- STYLES ---------------- */
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#F2F2F7",
+  },
+
+  /* HEADER SECTION */
+  headerBox: {
+    backgroundColor: "rgba(101, 6, 6, 1)",
+    paddingVertical: 55,
+    borderBottomLeftRadius: 45,
+    borderBottomRightRadius: 45,
+    alignItems: "center",
+    shadowColor: "rgba(213, 0, 0, 0.32)",
+    shadowOpacity: 0.35,
+    shadowRadius: 18,
+    elevation: 12,
+  },
+
+  headerTitle: {
+    fontSize: 34,
+    fontWeight: "900",
+    color: "#fff",
+    marginBottom: 25,
+    letterSpacing: 1,
+  },
+
+  /* AVATAR */
+  avatarShadow: {
+    shadowColor: "#ffffff",
+    shadowOpacity: 0.4,
+    shadowRadius: 20,
+    elevation: 12,
+  },
+
+  avatarBox: {
+    width: 125,
+    height: 125,
+    borderRadius: 80,
+    backgroundColor: "#fff",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+
+  avatarText: {
+    fontSize: 60,
+    fontWeight: "900",
+    color: "#B30000",
+  },
+
+  /* ⭐ NEW CARD DESIGN (YOUR REQUEST) ⭐ */
+  card: {
+    backgroundColor: "#fff",
+    padding: 30,
+    borderRadius: 20,
+    marginHorizontal: 25,
+    marginTop: -20,
+
+    elevation: 8,
+    shadowColor: "#B30000",
+    shadowOpacity: 0.2,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 6 },
+  },
+
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: "700",
+    marginBottom: 15,
+    color: "#222",
+  },
+
+  infoRow: {
+    marginVertical: 10,
+  },
+
+  label: {
+    fontSize: 14,
+    opacity: 0.6,
+  },
+
+  value: {
+    fontSize: 20,
+    fontWeight: "700",
+    marginTop: 3,
+    color: "#333",
+  },
+
+  line: {
+    height: 1,
+    backgroundColor: "rgba(0,0,0,0.08)",
+    marginVertical: 12,
+  },
+
+  /* LOGOUT BTN */
   logoutBtn: {
-    backgroundColor: "#B30000",
-    padding: 18,
-    borderRadius: 10,
+    backgroundColor: "#D60000",
+    paddingVertical: 16,
+    borderRadius: 14,
+    marginHorizontal: 25,
     marginTop: 40,
+    shadowColor: "#B30000",
+    shadowOpacity: 0.35,
+    shadowRadius: 12,
+    elevation: 10,
   },
 
   logoutText: {
-    color: "#fff",
     textAlign: "center",
-    fontSize: 18,
-    fontWeight: "700",
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "800",
   },
 });

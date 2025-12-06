@@ -3,11 +3,11 @@ import { router } from "expo-router";
 
 const alertTypes = [
   { name: "Fire" },
-  { name: "Accident" },
-  { name: "WomenSafety" },
   { name: "Crime" },
   { name: "Medical" },
-  { name: "StudentSOS" }
+  { name: "Accident" },
+   { name: "StudentSOS" },
+    { name: "WomenSafety" },
 ];
 
 export default function AlertTypeList() {
@@ -31,13 +31,52 @@ export default function AlertTypeList() {
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 20 },
-  title: { fontSize: 26, fontWeight: "bold", marginBottom: 20 },
-  btn: {
-    padding: 15,
-    backgroundColor: "#ddd",
-    borderRadius: 10,
-    marginBottom: 10
+  container: {
+    flex: 1,
+    paddingTop: 60,
+    padding: 20,
+    backgroundColor: "#ffffffff", // deep dark navy
+    alignItems: "center",
   },
-  btnText: { fontSize: 18 }
+
+  title: {
+    fontSize: 30,
+    fontWeight: "800",
+    color:"rgba(213, 0, 0, 0.32)", // neon blue
+    marginBottom: 30,
+    letterSpacing: 1,
+  },
+
+  // ⭐ NEON GLASS BUTTON
+  btn: {
+    paddingVertical: 20,
+    paddingHorizontal: 90,
+    borderRadius: 160,
+
+    // ✨ GLASS BACKGROUND
+    backgroundColor: "rgba(255, 255, 255, 0.05)",
+
+    // ✨ NEON BORDER GLOW
+    borderWidth: 1.5,
+    borderColor: "rgba(30, 101, 142, 0.9)",
+
+    shadowColor: "#6268d2ff",
+    shadowOpacity: 0.7,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 0 },
+    elevation: 10,
+
+    marginVertical: 12,
+    alignSelf: "center",
+  },
+
+  btnText: {
+    fontSize: 22,
+    fontWeight: "800",
+    color: "rgba(213, 0, 0, 0.32)", // neon red accent
+    letterSpacing: 1,
+    textAlign: "center",
+  },
 });
+
+

@@ -196,8 +196,8 @@ const styles = StyleSheet.create({
   /* ⭐ UPDATED FLOW ICONS */
   flowContainer: {
   marginTop: 15,
-  marginBottom: 5,
-  paddingTop: 60,
+  marginBottom: 1,
+  paddingTop: 50,
   alignItems: "center",
   flexDirection: "row",       // ⭐ NOW ICONS ARE HORIZONTAL
   justifyContent: "center",
@@ -256,7 +256,7 @@ const styles = StyleSheet.create({
 
   lightMid: {
     width: 8,
-    height: 28,
+    height: 180,
     backgroundColor: "yellow",
     transform: [{ rotate: "32deg" }],
     marginBottom: -8,
@@ -265,7 +265,7 @@ const styles = StyleSheet.create({
 
   lightBottom: {
     width: 8,
-    height: 22,
+    height: 180,
     backgroundColor: "yellow",
     transform: [{ rotate: "-22deg" }],
     borderRadius: 4,

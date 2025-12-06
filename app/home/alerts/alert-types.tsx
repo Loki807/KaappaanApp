@@ -31,14 +31,14 @@ export default function AlertTypes() {
 }
 
 const styles = StyleSheet.create({
-  container: { padding: 25 },
-  title: { fontSize: 28, fontWeight: "bold", marginBottom: 20 },
+  container: { padding: 25},
+  title: { fontSize: 28, fontWeight: "bold", marginBottom: 200},
   card: {
-    backgroundColor: "#fff",
+    backgroundColor: "#060606ff",
     padding: 18,
     marginBottom: 15,
     borderRadius: 10,
     elevation: 5,
   },
-  cardText: { fontSize: 20, fontWeight: "600" },
+  cardText: { fontSize: 20, fontWeight: "600", color: "#fff" },
 });

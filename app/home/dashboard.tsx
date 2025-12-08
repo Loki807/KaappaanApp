@@ -1,24 +1,26 @@
+import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
-import { View, Text, TouchableOpacity, StyleSheet, Image, Animated } from "react-native";
-import { useRef, useEffect } from "react";
+import { useEffect, useRef } from "react";
+import { Animated, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import FooterNav from "./FooterNav";
-import { MaterialCommunityIcons } from "@expo/vector-icons";   // ⭐ ADDED ICON IMPORT
 
 export default function Dashboard() {
+  /* SOS Blink */
   const blink = useRef(new Animated.Value(1)).current;
 
-  /* 🔥 WAVE ANIMATION VALUES */
+  /* WAVE ANIMATIONS */
   const wave1 = useRef(new Animated.Value(0)).current;
   const wave2 = useRef(new Animated.Value(0)).current;
+  const wave3 = useRef(new Animated.Value(0)).current;
 
-  /* ⚡ Lightning Flash Animation Values */
+  /* Lightning Animation */
   const flash1 = useRef(new Animated.Value(1)).current;
   const flash2 = useRef(new Animated.Value(1)).current;
   const flash3 = useRef(new Animated.Value(1)).current;
   const flash4 = useRef(new Animated.Value(1)).current;
 
   useEffect(() => {
-    // SOS blink loop
+    /* SOS Blink Animation */
     Animated.loop(
       Animated.sequence([
         Animated.timing(blink, { toValue: 0.3, duration: 600, useNativeDriver: true }),
@@ -26,8 +28,8 @@ export default function Dashboard() {
       ])
     ).start();
 
-    // Wave animation engine
-    const animateWave = (wave: Animated.Value | Animated.ValueXY, delay: number) =>
+    /* Wave Template */
+    const animateWave = (wave: Animated.Value, delay: number) =>
       Animated.loop(
         Animated.sequence([
           Animated.timing(wave, {
@@ -42,9 +44,10 @@ export default function Dashboard() {
 
     animateWave(wave1, 0);
     animateWave(wave2, 700);
+    animateWave(wave3, 1400);
 
-    // Lightning flicker animation
-    const lightning = (anim: Animated.Value | Animated.ValueXY, delay: number) =>
+    /* Lightning flicker */
+    const lightning = (anim: Animated.Value, delay: number) =>
       Animated.loop(
         Animated.sequence([
           Animated.timing(anim, { toValue: 0.2, duration: 120, delay, useNativeDriver: true }),
@@ -56,16 +59,11 @@ export default function Dashboard() {
     lightning(flash2, 200);
     lightning(flash3, 400);
     lightning(flash4, 600);
+  
   }, []);
 
-  /* ⚡ Lightning Component */
-  const Lightning = ({
-    style,
-    anim,
-  }: {
-    style: any;
-    anim: Animated.Value;
-  }) => (
+  /* Lightning Component */
+  const Lightning = ({ style, anim }: { style: any; anim: Animated.Value }) => (
     <Animated.View style={[styles.lightWrapper, style, { opacity: anim }]}>
       <View style={styles.lightTop} />
       <View style={styles.lightMid} />
@@ -85,26 +83,25 @@ export default function Dashboard() {
         <Text style={styles.title}>Kaappaan</Text>
       </View>
 
-     {/* ⭐ HORIZONTAL FLOW ICONS */}
-<View style={styles.flowContainer}>
-  <MaterialCommunityIcons name="alert-circle-outline" size={32} color="#7A0000" />
-  <MaterialCommunityIcons name="chevron-right" size={28} color="#B30000" />
-  <MaterialCommunityIcons name="radiobox-marked" size={32} color="#7A0000" />
-  <MaterialCommunityIcons name="chevron-right" size={28} color="#B30000" />
-  <MaterialCommunityIcons name="phone" size={32} color="#7A0000" />
-</View>
+      {/* FLOW ICONS */}
+      <View style={styles.flowContainer}>
+        <MaterialCommunityIcons name="alert-circle-outline" size={32} color="#7A0000" />
+        <MaterialCommunityIcons name="chevron-right" size={28} color="#B30000" />
+        <MaterialCommunityIcons name="radiobox-marked" size={32} color="#7A0000" />
+        <MaterialCommunityIcons name="chevron-right" size={28} color="#B30000" />
+        <MaterialCommunityIcons name="phone" size={32} color="#7A0000" />
+      </View>
 
-
-      {/* CENTER SOS AREA */}
+      {/* CENTER */}
       <View style={styles.centerArea}>
-
         {/* ⚡ Lightning */}
         <Lightning style={styles.light1} anim={flash1} />
         <Lightning style={styles.light2} anim={flash2} />
         <Lightning style={styles.light3} anim={flash3} />
         <Lightning style={styles.light4} anim={flash4} />
 
-        {/* 🔥 Wave 1 */}
+        {/* MULTI WAVES */}
+        {/* Wave 1 */}
         <Animated.View
           style={[
             styles.wave,
@@ -113,19 +110,19 @@ export default function Dashboard() {
                 {
                   scale: wave1.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [1, 3],
+                    outputRange: [1, 3.2], // Shockwave
                   }),
                 },
               ],
               opacity: wave1.interpolate({
                 inputRange: [0, 1],
-                outputRange: [0.5, 0],
+                outputRange: [0.45, 0],
               }),
             },
           ]}
         />
 
-        {/* 🔥 Wave 2 */}
+        {/* Wave 2 */}
         <Animated.View
           style={[
             styles.wave,
@@ -134,13 +131,34 @@ export default function Dashboard() {
                 {
                   scale: wave2.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [1, 3.5],
+                    outputRange: [1, 4], // Bigger wave
                   }),
                 },
               ],
               opacity: wave2.interpolate({
                 inputRange: [0, 1],
                 outputRange: [0.4, 0],
+              }),
+            },
+          ]}
+        />
+
+        {/* Wave 3 */}
+        <Animated.View
+          style={[
+            styles.wave,
+            {
+              transform: [
+                {
+                  scale: wave3.interpolate({
+                    inputRange: [0, 1],
+                    outputRange: [1, 5], // Long ripple
+                  }),
+                },
+              ],
+              opacity: wave3.interpolate({
+                inputRange: [0, 1],
+                outputRange: [0.35, 0],
               }),
             },
           ]}
@@ -193,17 +211,14 @@ const styles = StyleSheet.create({
     borderRadius: 6,
   },
 
-  /* ⭐ UPDATED FLOW ICONS */
   flowContainer: {
-  marginTop: 15,
-  marginBottom: 1,
-  paddingTop: 50,
-  alignItems: "center",
-  flexDirection: "row",       // ⭐ NOW ICONS ARE HORIZONTAL
-  justifyContent: "center",
-  gap: 10,                    // ⭐ SPACE BETWEEN ICONS
-},
-
+    marginTop: 10,
+    paddingTop: 10,
+    alignItems: "center",
+    flexDirection: "row",
+    justifyContent: "center",
+    gap: 10,
+  },
 
   centerArea: {
     flex: 1,
@@ -213,9 +228,9 @@ const styles = StyleSheet.create({
 
   wave: {
     position: "absolute",
-    width: 230,
-    height: 230,
-    borderRadius: 200,
+    width: 260,
+    height: 260,
+    borderRadius: 260,
     backgroundColor: "rgba(213, 0, 0, 0.32)",
   },
 
@@ -229,7 +244,7 @@ const styles = StyleSheet.create({
     elevation: 14,
     shadowColor: "red",
     shadowOpacity: 0.8,
-    shadowRadius: 20,
+    shadowRadius: 18,
   },
 
   sosText: {
@@ -271,7 +286,6 @@ const styles = StyleSheet.create({
     borderRadius: 4,
   },
 
-  /* Lightning Positions */
   light1: { top: -120, left: -85 },
   light2: { top: -120, right: -85 },
   light3: { bottom: -120, right: -85 },

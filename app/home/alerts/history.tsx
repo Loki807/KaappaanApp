@@ -11,11 +11,7 @@ export default function AlertHistory() {
   const loadHistory = async () => {
     try {
       const citizenId = await getCitizenId();
-
-      if (!citizenId) {
-        console.log("❌ No citizenId found");
-        return;
-      }
+      if (!citizenId) return;
 
       const res = await api.get(`/alert/citizen/${citizenId}`);
       setAlerts(res.data);
@@ -50,19 +46,49 @@ export default function AlertHistory() {
           keyExtractor={(item) => item.id}
           renderItem={({ item }) => (
             <View style={styles.timelineRow}>
-              
-              {/* Timeline Line */}
+
+              {/* LEFT TIMELINE LINE */}
               <View style={styles.timelineLine} />
 
-              {/* CARD */}
+              {/* MAIN CARD */}
               <View style={styles.card}>
-                <Text style={styles.type}>{item.alertTypeName}</Text>
-                <Text style={styles.desc}>{item.description}</Text>
-                <Text style={styles.date}>
-                  {new Date(item.reportedAt).toLocaleString()}
-                </Text>
-              </View>
 
+                {/* ICON + TYPE */}
+                <View style={styles.headerRow}>
+
+                  {/* ICON CIRCLE */}
+                  {/* <View style={styles.iconCircle}>
+                    <Text style={styles.iconEmoji}>
+                      {item.alertTypeName === "Fire"
+                        ? "🔥"
+                        : item.alertTypeName === "Police"
+                        ? "👮‍♂️"
+                        : item.alertTypeName === "Medical"
+                        ? "🚨"
+                        : "⚠️"}
+                    </Text>
+                  </View> */}
+
+                  {/* TYPE LABEL */}
+                  {/* <Text style={styles.type}>{item.alertTypeName}</Text> */}
+
+                </View>
+
+                {/* DESCRIPTION */}
+                <View style={styles.descBox}>
+                  <Text style={styles.descText}>
+                    {item.description || "No Description"}
+                  </Text>
+                </View>
+
+                {/* DATE */}
+                <View style={styles.dateBox}>
+                  <Text style={styles.dateText}>
+                    {new Date(item.reportedAt).toLocaleString()}
+                  </Text>
+                </View>
+
+              </View>
             </View>
           )}
         />
@@ -71,137 +97,145 @@ export default function AlertHistory() {
   );
 }
 
-/* ------------------ PERFECT FINAL PREMIUM STYLES ------------------ */
+/* ==================== STYLES ===================== */
 
 const styles = StyleSheet.create({
 
-  /* MAIN PAGE */
   container: { 
     flex: 1, 
-    padding: 30, 
-    backgroundColor: "#f5f6ff", // ultra clean
+    padding: 28, 
+    backgroundColor: "#F3F5FF",
   },
 
   center: { 
-    flex: 1, 
-    justifyContent: "center", 
-    alignItems: "center" 
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
   },
 
-  /* HEADER TITLE */
   title: { 
     fontSize: 34, 
     fontWeight: "900",
-    color: "#900000",
+    color: "#7A0000",
     marginBottom: 30,
     textAlign: "center",
-    letterSpacing: 1.5,
+    letterSpacing: 1.4,
   },
 
-  /* EMPTY MESSAGE */
   empty: { 
-    textAlign: "center", 
-    marginTop: 40, 
-    fontSize: 18, 
+    textAlign: "center",
+    marginTop: 40,
+    fontSize: 18,
     opacity: 0.6,
-    color: "#666",
-    fontWeight: "600",
   },
 
-  /* TIMELINE ROW */
   timelineRow: {
     flexDirection: "row",
-    alignItems: "flex-start",
-    marginBottom: 35,
+    marginBottom: 36,
   },
 
-  /* VERTICAL TIMELINE LINE */
   timelineLine: {
-    width: 4,
-    backgroundColor: "rgba(200,0,0,0.25)",
-    height: "100%",
-    borderRadius: 3,
-    marginLeft: 20,
-    marginRight: 20,
+    width: 5,
+    backgroundColor: "rgba(112, 0, 0, 0.25)",
+    borderRadius: 10,
+    marginRight: 18,
+    marginLeft: 18,
 
-    shadowColor: "#ffb3b3",
-    shadowOpacity: 0.35,
+    shadowColor: "#721212ff",
+    shadowOpacity: 0.3,
     shadowRadius: 10,
   },
 
-  /* PERFECTED PREMIUM CARD */
+  /* CARD */
   card: {
     flex: 1,
-    padding: 28,
-    borderRadius: 26,
+    padding: 26,
+    borderRadius: 24,
 
-    /* Glass feel */
-    backgroundColor: "rgba(255,255,255,0.97)",
-    borderWidth: 1.2,
-    borderColor: "rgba(180,0,0,0.18)",
+    backgroundColor: "rgba(255,255,255,0.98)",
+    borderWidth: 1,
+    borderColor: "rgba(120,0,0,0.18)",
 
-    /* Deep luxury shadow */
-    shadowColor: "#8A0000",
+    shadowColor: "#7A0000",
     shadowOpacity: 0.22,
     shadowRadius: 22,
     shadowOffset: { width: 0, height: 8 },
-    elevation: 16,
+    elevation: 14,
 
-    /* Neon Alert strip */
-    borderTopWidth: 8,
-    borderTopColor: "#ff1e1e",
+    borderTopWidth: 7,
+    borderTopColor: "#750606ff",
   },
 
-  /* ALERT TYPE BADGE */
-  type: { 
-    fontSize: 22, 
-    fontWeight: "900",
+  /* HEADER */
+  headerRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 14,
+  },
 
-    paddingVertical: 7,
-    paddingHorizontal: 18,
-    alignSelf: "flex-start",
+  /* CIRCLE ICON */
+  // iconCircle: {
+  //   width: 46,
+  //   height: 46,
+  //   borderRadius: 23,
+  //   backgroundColor: "rgba(255,0,0,0.12)",
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  //   marginRight: 12,
+  // },
 
-    backgroundColor: "rgba(255, 0, 0, 0.12)",
-    borderRadius: 14,
-    color: "#b30000",
-    letterSpacing: 0.9,
+  // iconEmoji: {
+  //   fontSize: 26,
+  // },
+
+  // type: { 
+  //   fontSize: 21,
+  //   fontWeight: "800",
+  //   paddingVertical: 6,
+  //   paddingHorizontal: 16,
+  //   backgroundColor: "rgba(255,0,0,0.15)",
+  //   borderRadius: 14,
+  //   color: "#A00000",
+  //   letterSpacing: 0.8,
+
+  //   shadowColor: "#FF5A5A",
+  //   shadowOpacity: 0.25,
+  //   shadowRadius: 10,
+  // },
+
+  /* DESCRIPTION */
+  descBox: {
+    backgroundColor: "rgba(198, 67, 67, 0.04)",
+    padding: 14,
+    borderRadius: 12,
     marginBottom: 16,
-
-    shadowColor: "#ff6666",
-    shadowOpacity: 0.28,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 4 },
   },
 
-  /* DESCRIPTION TEXT */
-  desc: { 
-    fontSize: 18, 
-    color: "#111",
-    lineHeight: 26,
-    marginBottom: 20,
+  descText: {
+    fontSize: 17,
+    color: "#c11111ff",
     fontWeight: "500",
-    letterSpacing: 0.3,
+    lineHeight: 24,
   },
 
-  /* DATE + TIME PILL */
-  date: { 
-    fontSize: 15, 
-    fontWeight: "700",
-    color: "#333",
-
-    backgroundColor: "rgba(0,0,0,0.07)",
+  /* DATE PILL */
+  dateBox: {
+    alignSelf: "flex-start",
     paddingVertical: 8,
     paddingHorizontal: 16,
+    backgroundColor: "rgba(4, 4, 4, 0.07)",
     borderRadius: 30,
-    alignSelf: "flex-start",
 
-    letterSpacing: 0.6,
-    fontStyle: "italic",
-
-    shadowColor: "#000",
-    shadowOpacity: 0.12,
+    shadowColor: "#5f3838ff",
+    shadowOpacity: 0.15,
     shadowRadius: 6,
-    shadowOffset: { width: 0, height: 2 },
+  },
+
+  dateText: {
+    fontSize: 15,
+    fontWeight: "700",
+    color: "#8a0404ff",
+    fontStyle: "italic",
   },
 
 });

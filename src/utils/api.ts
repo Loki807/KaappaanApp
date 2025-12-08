@@ -8,6 +8,7 @@ const api = axios.create({
   headers: { "Content-Type": "application/json" },
 });
 
+// ⭐ Automatically attach token for secure requests
 api.interceptors.request.use(async (config) => {
   const token = await SecureStore.getItemAsync("token");
   if (token) config.headers.Authorization = `Bearer ${token}`;

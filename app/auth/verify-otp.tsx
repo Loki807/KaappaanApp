@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import { verifyOtpRequest } from "../../src/api/authApi";
 import { saveToken, saveCitizenId } from "../../src/utils/storage";
+import api from "../../src/utils/api";
 
 export default function VerifyOtp() {
   const { email } = useLocalSearchParams();
@@ -26,12 +27,16 @@ export default function VerifyOtp() {
       const res = await verifyOtpRequest(String(email), otp);
 
       await saveToken(res.data.token);
+      await saveCitizenId(res.data.citizenId);
 
-      if (res.data.citizenId) {
-        await saveCitizenId(res.data.citizenId);
+      // ⭐ CHECK EMERGENCY CONTACT
+      const ec = await api.get(`/citizen/emergency-contact/${res.data.citizenId}`);
+
+      if (!ec.data.emergencyContact || ec.data.emergencyContact === "") {
+        router.replace("/auth/emergency-contact");
+      } else {
+        router.replace("/home/dashboard");
       }
-
-      router.replace("/home/dashboard");
     } catch (err: any) {
       Alert.alert("Error", err.response?.data?.message || "Invalid OTP");
     }
@@ -45,13 +50,8 @@ export default function VerifyOtp() {
       <ScrollView contentContainerStyle={styles.container}>
         <View style={styles.card}>
 
-          {/* LOGO + TITLE */}
           <View style={styles.topRow}>
-            <Image
-              source={require("../../assets/logo.jpeg")}
-              style={styles.logo}
-            />
-            
+            <Image source={require("../../assets/logo.jpeg")} style={styles.logo} />
           </View>
 
           <Text style={styles.header}>Verify OTP</Text>
@@ -69,7 +69,6 @@ export default function VerifyOtp() {
           <TouchableOpacity style={styles.btn} onPress={verify}>
             <Text style={styles.btnText}>Verify</Text>
           </TouchableOpacity>
-
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -77,57 +76,16 @@ export default function VerifyOtp() {
 }
 
 const styles = StyleSheet.create({
-  wrap: {
-    flex: 1,
-    backgroundColor: "#F8F5F2",
-  },
-
-  container: {
-    flexGrow: 1,
-    justifyContent: "center",
-    padding: 20,
-  },
-
-  /* CARD */
+  wrap: { flex: 1, backgroundColor: "#F8F5F2" },
+  container: { flexGrow: 1, justifyContent: "center", padding: 20 },
   card: {
     backgroundColor: "#ffffff",
     padding: 30,
     borderRadius: 20,
     elevation: 8,
-    shadowColor: "#B30000",
-    shadowOpacity: 0.18,
-    shadowRadius: 12,
   },
-
-  /* LOGO */
-  logo: {
-    width: 75,
-    height: 75,
-    resizeMode: "contain",
-  },
-
-  topRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "center",
-    marginBottom: 22,
-    marginLeft: -10,  // perfect center alignment
-  },
-
-  /* TITLE */
-  appTitle: {
-    fontSize: 28,
-    fontWeight: "900",
-    color: "#7A0000",
-  },
-
-  subText: {
-    fontSize: 16,
-    color: "#A00000",
-    marginTop: 2,
-  },
-
-  /* OTP HEADER */
+  logo: { width: 75, height: 75, resizeMode: "contain" },
+  topRow: { flexDirection: "row", justifyContent: "center", marginBottom: 20 },
   header: {
     fontSize: 26,
     color: "#7A0000",
@@ -135,16 +93,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 10,
   },
-
-  sub: {
-    textAlign: "center",
-    color: "#A00000",
-    marginBottom: 20,
-    fontSize: 16,
-    fontWeight: "600",
-  },
-
-  /* OTP INPUT */
+  sub: { textAlign: "center", color: "#A00000", marginBottom: 20, fontSize: 16 },
   input: {
     borderWidth: 1,
     borderColor: "#ddd",
@@ -156,19 +105,11 @@ const styles = StyleSheet.create({
     color: "#333",
     letterSpacing: 5,
   },
-
-  /* BUTTON */
   btn: {
     backgroundColor: "#B30000",
     padding: 18,
-    marginTop: 25,
     borderRadius: 12,
+    marginTop: 25,
   },
-
-  btnText: {
-    color: "white",
-    textAlign: "center",
-    fontWeight: "800",
-    fontSize: 20,
-  },
+  btnText: { color: "#fff", fontWeight: "800", textAlign: "center", fontSize: 20 },
 });

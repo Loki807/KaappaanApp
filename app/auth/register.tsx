@@ -48,12 +48,27 @@ export default function RegisterScreen() {
     try {
       const res = await registerRequest(form);
 
-      if (res.data.message.includes("OTP")) {
+      // SUCCESS → OTP Sent
+      if (res.data.message?.includes("OTP")) {
         Alert.alert("Success", "OTP has been sent!");
-        router.push(`/auth/verify-otp?phone=${form.phoneNumber}`);
+
+        // Navigate to Verify OTP
+        router.push(`/auth/verify-otp?email=${form.email}`);
       }
     } catch (err: any) {
-      const msg = err.response?.data?.message || "Registration failed";
+      let msg = "Registration failed";
+
+      const backendMsg = err.response?.data?.message;
+
+      if (backendMsg) {
+        if (typeof backendMsg === "object") {
+          // Convert object errors → string
+          msg = Object.values(backendMsg).flat().join("\n");
+        } else {
+          msg = backendMsg;
+        }
+      }
+
       Alert.alert("Error", msg);
     }
   };
@@ -85,7 +100,6 @@ export default function RegisterScreen() {
             style={styles.input}
             placeholder="Phone Number"
             keyboardType="number-pad"
-            autoCapitalize="none"
             onChangeText={(v) => update("phoneNumber", v)}
           />
 
@@ -119,7 +133,10 @@ export default function RegisterScreen() {
             <Text style={styles.btnText}>Register</Text>
           </TouchableOpacity>
 
-          <Text style={styles.link} onPress={() => router.replace("/auth/login")}>
+          <Text
+            style={styles.link}
+            onPress={() => router.replace("/auth/login")}
+          >
             Already have an account? Login
           </Text>
         </View>
@@ -131,7 +148,7 @@ export default function RegisterScreen() {
 const styles = StyleSheet.create({
   wrap: {
     flex: 1,
-    backgroundColor: "#F8F5F2", // warm cream (hope + comfort)
+    backgroundColor: "#F8F5F2",
   },
   container: {
     flexGrow: 1,

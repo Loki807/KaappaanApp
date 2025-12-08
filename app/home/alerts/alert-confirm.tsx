@@ -2,20 +2,30 @@ import * as Location from "expo-location";
 import { router, useLocalSearchParams } from "expo-router";
 import * as SecureStore from "expo-secure-store";
 import { useEffect, useState } from "react";
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from "react-native";
+import {
+  Alert,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+  Linking,
+} from "react-native";
+import api from "../../../src/utils/api";
 import { sendSOS } from "../../../src/api/alertApi";
 
 export default function AlertConfirm() {
   const { type } = useLocalSearchParams();
   const [description, setDescription] = useState("");
   const [coords, setCoords] = useState<any>(null);
+  const [emergencyPhone, setEmergencyPhone] = useState("");
 
   useEffect(() => {
     (async () => {
+      // LOCATION
       let { status } = await Location.requestForegroundPermissionsAsync();
-
       if (status !== "granted") {
-        Alert.alert("Permission needed", "Turn on location permission.");
+        Alert.alert("Permission needed");
         return;
       }
 
@@ -23,53 +33,60 @@ export default function AlertConfirm() {
         accuracy: Location.Accuracy.High,
       });
 
-      setCoords({
-        lat: loc.coords.latitude,
-        lng: loc.coords.longitude,
-      });
+      setCoords({ lat: loc.coords.latitude, lng: loc.coords.longitude });
 
-      console.log("📍 Location:", {
-        lat: loc.coords.latitude,
-        lng: loc.coords.longitude,
-        acc: loc.coords.accuracy,
-      });
+      // EMERGENCY CONTACT
+      const citizenId = await SecureStore.getItemAsync("citizenId");
+      if (citizenId) {
+        const res = await api.get(`/citizen/emergency-contact/${citizenId}`);
+        setEmergencyPhone(res.data.emergencyContact);
+      }
     })();
   }, []);
 
-  const submitAlert = async () => {
-    if (!coords) {
-      Alert.alert("Error", "Location not available");
-      return;
-    }
+  const sendOnlineAlert = async () => {
+    if (!coords) return Alert.alert("Location not ready");
 
-    // ⭐ GET REAL CITIZEN ID (already saved during OTP login)
     const citizenId = await SecureStore.getItemAsync("citizenId");
 
-    if (!citizenId) {
-      Alert.alert("Error", "Citizen ID missing. Please login again.");
-      router.replace("/auth/login");
-      return;
-    }
-
-   const payload = {
-  CitizenId: String(citizenId),   // ⭐ GUID FIX
-  AlertTypeName: type,
-  Description: description || "No description",
-  Latitude: coords.lat,
-  Longitude: coords.lng,
-  ReportedAt: new Date().toISOString(),
-};
-
-    console.log("🚀 FINAL PAYLOAD:", payload);
+    const payload = {
+      CitizenId: citizenId,
+      AlertTypeName: type,
+      Description: description || "No description",
+      Latitude: coords.lat,
+      Longitude: coords.lng,
+      ReportedAt: new Date().toISOString(),
+    };
 
     try {
       await sendSOS(payload);
-      Alert.alert("Success", "Alert sent successfully!");
+      Alert.alert("Success", "Alert sent!");
       router.push("/home/dashboard");
-    } catch (err: any) {
-      console.log("❌ ERROR RESPONSE:", err.response?.data);
-      Alert.alert("Error", "Failed to send alert");
+    } catch {
+      Alert.alert("Error", "Failed to send");
     }
+  };
+
+  const sendSMS = () => {
+    if (!coords) return;
+    const msg = `🚨 EMERGENCY ALERT
+Type: ${type}
+Desc: ${description}
+Location: https://maps.google.com/?q=${coords.lat},${coords.lng}`;
+    Linking.openURL(`sms:${emergencyPhone}?body=${encodeURIComponent(msg)}`);
+  };
+
+  const sendWhatsApp = () => {
+    if (!coords) return;
+    const phone = emergencyPhone.startsWith("0")
+      ? `94${emergencyPhone.substring(1)}`
+      : emergencyPhone;
+
+    const msg = `🚨 EMERGENCY ALERT
+Type: ${type}
+Desc: ${description}
+Location: https://maps.google.com/?q=${coords.lat},${coords.lng}`;
+    Linking.openURL(`https://wa.me/${phone}?text=${encodeURIComponent(msg)}`);
   };
 
   return (
@@ -84,8 +101,16 @@ export default function AlertConfirm() {
         onChangeText={setDescription}
       />
 
-      <TouchableOpacity style={styles.btn} onPress={submitAlert}>
-        <Text style={styles.btnText}>Send Alert</Text>
+      <TouchableOpacity style={styles.btnOnline} onPress={sendOnlineAlert}>
+        <Text style={styles.btnText}>Send Online Alert</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.btnSMS} onPress={sendSMS}>
+        <Text style={styles.btnText}>Send SMS Alert</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.btnWhatsApp} onPress={sendWhatsApp}>
+        <Text style={styles.btnText}>Send WhatsApp Alert</Text>
       </TouchableOpacity>
     </View>
   );
@@ -101,17 +126,30 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: "#fafafa",
     height: 120,
-    marginBottom: 20,
+    marginBottom: 25,
   },
-  btn: {
-    backgroundColor: "red",
-    padding: 18,
+  btnOnline: {
+    backgroundColor: "#B30000",
+    padding: 16,
     borderRadius: 10,
+    marginBottom: 12,
+  },
+  btnSMS: {
+    backgroundColor: "#333",
+    padding: 16,
+    borderRadius: 10,
+    marginBottom: 12,
+  },
+  btnWhatsApp: {
+    backgroundColor: "#25D366",
+    padding: 16,
+    borderRadius: 10,
+    marginBottom: 12,
   },
   btnText: {
     color: "#fff",
     textAlign: "center",
-    fontSize: 20,
+    fontSize: 18,
     fontWeight: "bold",
   },
 });

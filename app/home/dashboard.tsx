@@ -1,69 +1,73 @@
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { router } from "expo-router";
 import { useEffect, useRef } from "react";
-import { Animated, Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import {
+  Animated,
+  Image,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
 import FooterNav from "./FooterNav";
 
 export default function Dashboard() {
-  /* SOS Blink */
+  /* Animations */
   const blink = useRef(new Animated.Value(1)).current;
 
-  /* WAVE ANIMATIONS */
   const wave1 = useRef(new Animated.Value(0)).current;
   const wave2 = useRef(new Animated.Value(0)).current;
   const wave3 = useRef(new Animated.Value(0)).current;
 
-  /* Lightning Animation */
   const flash1 = useRef(new Animated.Value(1)).current;
   const flash2 = useRef(new Animated.Value(1)).current;
   const flash3 = useRef(new Animated.Value(1)).current;
   const flash4 = useRef(new Animated.Value(1)).current;
 
-  useEffect(() => {
-    /* SOS Blink Animation */
+  /* Wave Animation Function */
+  const animateWave = (wave: Animated.Value, delay: number) =>
     Animated.loop(
       Animated.sequence([
-        Animated.timing(blink, { toValue: 0.3, duration: 600, useNativeDriver: true }),
-        Animated.timing(blink, { toValue: 1, duration: 600, useNativeDriver: true }),
+        Animated.timing(wave, {
+          toValue: 1,
+          duration: 2000,
+          delay,
+          useNativeDriver: true,
+        }),
+        Animated.timing(wave, {
+          toValue: 0,
+          duration: 0,
+          useNativeDriver: true,
+        }),
       ])
     ).start();
 
-    /* Wave Template */
-    const animateWave = (wave: Animated.Value, delay: number) =>
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(wave, {
-            toValue: 1,
-            duration: 2000,
-            delay,
-            useNativeDriver: true,
-          }),
-          Animated.timing(wave, { toValue: 0, duration: 0, useNativeDriver: true }),
-        ])
-      ).start();
-
-    animateWave(wave1, 0);
-    animateWave(wave2, 700);
-    animateWave(wave3, 1400);
-
-    /* Lightning flicker */
-    const lightning = (anim: Animated.Value, delay: number) =>
-      Animated.loop(
-        Animated.sequence([
-          Animated.timing(anim, { toValue: 0.2, duration: 120, delay, useNativeDriver: true }),
-          Animated.timing(anim, { toValue: 1, duration: 120, useNativeDriver: true }),
-        ])
-      ).start();
-
-    lightning(flash1, 0);
-    lightning(flash2, 200);
-    lightning(flash3, 400);
-    lightning(flash4, 600);
-  
-  }, []);
+  /* Flicker Animation */
+  const flicker = (anim: Animated.Value, delay: number) =>
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(anim, {
+          toValue: 0.2,
+          duration: 120,
+          delay,
+          useNativeDriver: true,
+        }),
+        Animated.timing(anim, {
+          toValue: 1,
+          duration: 120,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
 
   /* Lightning Component */
-  const Lightning = ({ style, anim }: { style: any; anim: Animated.Value }) => (
+  const Lightning = ({
+    anim,
+    style,
+  }: {
+    anim: Animated.Value;
+    style: any;
+  }) => (
     <Animated.View style={[styles.lightWrapper, style, { opacity: anim }]}>
       <View style={styles.lightTop} />
       <View style={styles.lightMid} />
@@ -71,37 +75,64 @@ export default function Dashboard() {
     </Animated.View>
   );
 
+  /* Start Animations */
+  useEffect(() => {
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(blink, {
+          toValue: 0.3,
+          duration: 600,
+          useNativeDriver: true,
+        }),
+        Animated.timing(blink, {
+          toValue: 1,
+          duration: 600,
+          useNativeDriver: true,
+        }),
+      ])
+    ).start();
+
+    animateWave(wave1, 0);
+    animateWave(wave2, 600);
+    animateWave(wave3, 1200);
+
+    flicker(flash1, 0);
+    flicker(flash2, 200);
+    flicker(flash3, 400);
+    flicker(flash4, 600);
+  }, []);
+
   return (
     <View style={styles.container}>
+      {/* TOP BANNER */}
+      <View style={styles.topBanner}>
+        <View style={styles.headerRow}>
+          <View style={styles.logoCircle}>
+            <Image source={require("../../assets/logo.jpeg")} style={styles.logo} />
+          </View>
 
-      {/* HEADER */}
-      <View style={styles.headerRow}>
-        <View style={styles.logoCircle}>
-          <Image source={require("../../assets/logo.jpeg")} style={styles.logo} />
+          <View>
+            <Text style={styles.title}>Kaappaan</Text>
+            <Text style={styles.subTitle}>Emergency Assistant</Text>
+          </View>
         </View>
 
-        <Text style={styles.title}>Kaappaan</Text>
+        <View style={styles.statusRow}>
+  <MaterialCommunityIcons name="shield-check" size={26} color="#ffdddd" />
+  <Text style={styles.statusText}>Always Ready</Text>
+</View>
+
       </View>
 
-      {/* FLOW ICONS */}
-      <View style={styles.flowContainer}>
-        <MaterialCommunityIcons name="alert-circle-outline" size={32} color="#7A0000" />
-        <MaterialCommunityIcons name="chevron-right" size={28} color="#B30000" />
-        <MaterialCommunityIcons name="radiobox-marked" size={32} color="#7A0000" />
-        <MaterialCommunityIcons name="chevron-right" size={28} color="#B30000" />
-        <MaterialCommunityIcons name="phone" size={32} color="#7A0000" />
-      </View>
-
-      {/* CENTER */}
+      {/* CENTER AREA */}
       <View style={styles.centerArea}>
-        {/* ⚡ Lightning */}
-        <Lightning style={styles.light1} anim={flash1} />
-        <Lightning style={styles.light2} anim={flash2} />
-        <Lightning style={styles.light3} anim={flash3} />
-        <Lightning style={styles.light4} anim={flash4} />
+        {/* Lightning */}
+        <Lightning anim={flash1} style={styles.light1} />
+        <Lightning anim={flash2} style={styles.light2} />
+        <Lightning anim={flash3} style={styles.light3} />
+        <Lightning anim={flash4} style={styles.light4} />
 
-        {/* MULTI WAVES */}
-        {/* Wave 1 */}
+        {/* WAVE EFFECTS */}
         <Animated.View
           style={[
             styles.wave,
@@ -110,19 +141,18 @@ export default function Dashboard() {
                 {
                   scale: wave1.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [1, 3.2], // Shockwave
+                    outputRange: [1, 3.2],
                   }),
                 },
               ],
               opacity: wave1.interpolate({
                 inputRange: [0, 1],
-                outputRange: [0.45, 0],
+                outputRange: [0.4, 0],
               }),
             },
           ]}
         />
 
-        {/* Wave 2 */}
         <Animated.View
           style={[
             styles.wave,
@@ -131,19 +161,18 @@ export default function Dashboard() {
                 {
                   scale: wave2.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [1, 4], // Bigger wave
+                    outputRange: [1, 4],
                   }),
                 },
               ],
               opacity: wave2.interpolate({
                 inputRange: [0, 1],
-                outputRange: [0.4, 0],
+                outputRange: [0.35, 0],
               }),
             },
           ]}
         />
 
-        {/* Wave 3 */}
         <Animated.View
           style={[
             styles.wave,
@@ -152,13 +181,13 @@ export default function Dashboard() {
                 {
                   scale: wave3.interpolate({
                     inputRange: [0, 1],
-                    outputRange: [1, 5], // Long ripple
+                    outputRange: [1, 5],
                   }),
                 },
               ],
               opacity: wave3.interpolate({
                 inputRange: [0, 1],
-                outputRange: [0.35, 0],
+                outputRange: [0.3, 0],
               }),
             },
           ]}
@@ -170,6 +199,20 @@ export default function Dashboard() {
             <Text style={styles.sosText}>SOS</Text>
           </TouchableOpacity>
         </Animated.View>
+
+        {/* RED ALERT BUTTON — PERFECT ABOVE NEW FOOTER */}
+        <TouchableOpacity
+          style={styles.redAlertBtn}
+          onPress={() =>
+            router.push({
+              pathname: "/home/alerts/alert-confirm",
+              params: { type: "Crime" },
+            })
+          }
+        >
+          <MaterialCommunityIcons name="alert" size={30} color="#fff" />
+          <Text style={styles.redAlertText}>RED ALERT</Text>
+        </TouchableOpacity>
       </View>
 
       {/* FOOTER */}
@@ -178,116 +221,125 @@ export default function Dashboard() {
   );
 }
 
+/* ===================== STYLES ===================== */
+
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#fafafa" },
 
+  topBanner: {
+    backgroundColor: "#7A0000",
+    paddingBottom: 35,
+    paddingTop: 60,
+    borderBottomLeftRadius: 40,
+    borderBottomRightRadius: 40,
+    elevation: 10,
+  },
+
   headerRow: {
-    marginTop: 50,
-    paddingHorizontal: 20,
     flexDirection: "row",
     alignItems: "center",
+    paddingHorizontal: 22,
     gap: 12,
   },
 
-  title: {
-    fontSize: 32,
-    fontWeight: "900",
-    color: "#7A0000",
-  },
+  title: { fontSize: 32, fontWeight: "900", color: "#fff" },
+  subTitle: { fontSize: 14, color: "#ffdddd" },
 
   logoCircle: {
-    width: 55,
-    height: 55,
-    borderRadius: 50,
+    width: 60,
+    height: 60,
+    borderRadius: 60,
     backgroundColor: "#fff",
-    elevation: 6,
     justifyContent: "center",
     alignItems: "center",
   },
-
-  logo: {
-    width: 40,
-    height: 40,
-    borderRadius: 6,
-  },
+  logo: { width: 42, height: 42, borderRadius: 10 },
 
   flowContainer: {
-    marginTop: 10,
-    paddingTop: 10,
-    alignItems: "center",
+    marginTop: 18,
     flexDirection: "row",
     justifyContent: "center",
-    gap: 10,
+    gap: 12,
   },
 
   centerArea: {
     flex: 1,
-    justifyContent: "center",
     alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
   },
 
+  /* Waves */
   wave: {
     position: "absolute",
     width: 260,
     height: 260,
     borderRadius: 260,
-    backgroundColor: "rgba(213, 0, 0, 0.32)",
+    backgroundColor: "rgba(213,0,0,0.28)",
   },
 
+  /* SOS Button */
   sosCircle: {
-    width: 200,
-    height: 200,
-    borderRadius: 200,
+    width: 210,
+    height: 210,
+    borderRadius: 210,
     backgroundColor: "#D50000",
     justifyContent: "center",
     alignItems: "center",
-    elevation: 14,
-    shadowColor: "red",
-    shadowOpacity: 0.8,
-    shadowRadius: 18,
+    elevation: 15,
+    zIndex: 5,
   },
 
   sosText: {
-    fontSize: 48,
-    color: "#fff",
+    fontSize: 52,
     fontWeight: "900",
+    color: "#fff",
   },
 
-  lightWrapper: {
+  /* RED ALERT BUTTON */
+  redAlertBtn: {
     position: "absolute",
-    width: 50,
-    height: 110,
+    bottom: 140,   // ⭐ PERFECT ABOVE LARGE FOOTER!
+    backgroundColor: "#B30000",
+    paddingVertical: 14,
+    paddingHorizontal: 34,
+    borderRadius: 45,
+    flexDirection: "row",
     alignItems: "center",
+    gap: 10,
+    elevation: 10,
   },
 
-  lightTop: {
-    width: 8,
-    height: 25,
-    backgroundColor: "yellow",
-    transform: [{ rotate: "-28deg" }],
-    marginBottom: -8,
-    borderRadius: 4,
+  redAlertText: {
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "700",
   },
 
-  lightMid: {
-    width: 8,
-    height: 180,
-    backgroundColor: "yellow",
-    transform: [{ rotate: "32deg" }],
-    marginBottom: -8,
-    borderRadius: 4,
-  },
+  /* Lightning Shapes */
+  lightWrapper: { position: "absolute", width: 50, height: 110, alignItems: "center" },
+  lightTop: { width: 8, height: 25, backgroundColor: "yellow", borderRadius: 4, transform: [{ rotate: "-28deg" }] },
+  lightMid: { width: 8, height: 180, backgroundColor: "yellow", borderRadius: 4, transform: [{ rotate: "32deg" }] },
+  lightBottom: { width: 8, height: 180, backgroundColor: "yellow", borderRadius: 4, transform: [{ rotate: "-22deg" }] },
 
-  lightBottom: {
-    width: 8,
-    height: 180,
-    backgroundColor: "yellow",
-    transform: [{ rotate: "-22deg" }],
-    borderRadius: 4,
-  },
+  light1: { top: -120, left: -80 },
+  light2: { top: -120, right: -80 },
+  light3: { bottom: -120, right: -80 },
+  light4: { bottom: -120, left: -80 },
 
-  light1: { top: -120, left: -85 },
-  light2: { top: -120, right: -85 },
-  light3: { bottom: -120, right: -85 },
-  light4: { bottom: -120, left: -85 },
+  statusRow: {
+  marginTop: 15,
+  flexDirection: "row",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: 10,
+},
+
+statusText: {
+  color: "#ffdddd",
+  fontSize: 16,
+  fontWeight: "600",
+  letterSpacing: 0.5,
+},
+
 });

@@ -5,7 +5,7 @@ import { router, usePathname } from "expo-router";
 export default function FooterNav() {
   const path = usePathname();
 
-  const navItems = [
+  const navItems: { icon: keyof typeof Feather.glyphMap; route: string }[] = [
     { icon: "home", route: "/home/dashboard" },
     { icon: "bell", route: "/home/alerts/history" },
     { icon: "user", route: "/home/profile" },
@@ -23,10 +23,9 @@ export default function FooterNav() {
             onPress={() => router.push(item.route as any)}
           >
             <Feather
-              name={item.icon as any}
+              name={item.icon}
               size={28}
-              color={active ? "#B30000" : "#6e6b6bff"}
-              style={active && styles.activeIcon}
+              color={active ? "#B30000" : "#6e6b6b"}
             />
           </TouchableOpacity>
         );
@@ -39,22 +38,19 @@ const styles = StyleSheet.create({
   footer: {
     flexDirection: "row",
     justifyContent: "space-around",
-    paddingVertical: 30,
-    backgroundColor: "#ffffffff",
+    paddingVertical: 20,
+    paddingBottom: 28,
+    backgroundColor: "#fff",
     borderTopWidth: 1,
     borderColor: "#ddd",
     position: "absolute",
-    bottom: 30,
+    bottom: 0,
     left: 0,
     right: 0,
-    zIndex: 20,
+    elevation: 20,
   },
 
   btn: {
     padding: 10,
-  },
-
-  activeIcon: {
-    transform: [{ scale: 1.00 }],
   },
 });

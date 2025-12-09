@@ -9,18 +9,29 @@ export default function AlertHistory() {
   const [loading, setLoading] = useState(true);
 
   const loadHistory = async () => {
-    try {
-      const citizenId = await getCitizenId();
-      if (!citizenId) return;
+  try {
+    const citizenId = await getCitizenId();
+    if (!citizenId) return;
 
-      const res = await api.get(`/alert/citizen/${citizenId}`);
-      setAlerts(res.data);
-    } catch (err) {
-      console.log("❌ Failed to load alerts:", err);
-    } finally {
-      setLoading(false);
-    }
-  };
+    const res = await api.get(`/alert/citizen/${citizenId}`);
+
+    // ⭐ SORT + TAKE LAST 5 ONLY
+    const sorted = res.data.sort(
+      (a: AlertItem, b: AlertItem) =>
+        new Date(b.reportedAt).getTime() - new Date(a.reportedAt).getTime()
+    );
+
+    const latestFive = sorted.slice(0, 5);
+
+    setAlerts(latestFive);
+
+  } catch (err) {
+    console.log("❌ Failed to load alerts:", err);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     loadHistory();

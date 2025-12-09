@@ -24,8 +24,8 @@ export default function AlertTypeList() {
             router.push(`/home/alerts/alert-confirm?type=${a.name}`)
           }
         >
-          {/* <MaterialCommunityIcons name={a.icon} size={30} color={a.color} /> */}
-          <MaterialCommunityIcons name="fire" size={30} color="red" />
+          {/* ✅ FIXED LINE (ONLY THIS CHANGED) */}
+          <MaterialCommunityIcons name={a.icon as any} size={30} color={a.color} />
 
           <Text style={[styles.cardText, { color: a.color }]}>{a.name}</Text>
         </TouchableOpacity>
@@ -51,20 +51,14 @@ const styles = StyleSheet.create({
     letterSpacing: 1.3,
   },
 
-  // ⭐ PROFESSIONAL CARD BUTTON
   card: {
     flexDirection: "row",
     alignItems: "center",
-
     padding: 18,
     marginBottom: 18,
-
     backgroundColor: "#FFFFFF",
     borderRadius: 14,
-
-    borderLeftWidth: 8, // colored identity stripe
-
-    // Premium Kaappaan Shadow
+    borderLeftWidth: 8,
     shadowColor: "#000",
     shadowOpacity: 0.15,
     shadowRadius: 10,
